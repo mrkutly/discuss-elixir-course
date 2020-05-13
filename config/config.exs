@@ -28,7 +28,7 @@ import_config "#{Mix.env()}.exs"
 # Configures Überauth
 config :ueberauth, Ueberauth,
   providers: [
-    github: {Ueberauth.Strategy.Github, []}
+    github: {Ueberauth.Strategy.Github, [default_scope: "user, user:email"]}
   ]
 
 import_config "dev.secret.exs"

@@ -1,12 +1,15 @@
 import {Socket} from "phoenix"
 
-let socket = new Socket("/socket", {params: {token: window.userToken}})
+const socket = new Socket("/socket", { params: { token: window.userToken } })
 
 socket.connect()
 
-const makeTemplate = (comment) => `
+const makeTemplate = ({ content, user }) => `
 	<li class="collection-item">
-		${comment.content}
+		${content}
+		<div class="secondary-content">
+			${user ? user.email : 'Anonymous'}
+		</div>
 	</li>
 `;
 

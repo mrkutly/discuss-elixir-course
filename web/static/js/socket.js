@@ -4,12 +4,30 @@ let socket = new Socket("/socket", {params: {token: window.userToken}})
 
 socket.connect()
 
+const makeTemplate = (comment) => `
+	<li class="collection-item">
+		${comment.content}
+	</li>
+`;
+
+const renderComment = (comment) => {
+	const template = makeTemplate(comment);
+	document.querySelector('.collection').innerHTML += template;
+};
+
+const renderComments = (comments) => {
+	const template = comments.map(makeTemplate).join('');
+	document.querySelector('.collection').innerHTML = template;
+};
+
 const createSocket = (topicId) => {
 	let channel = socket.channel(`comments:${topicId}`, {})
 	
 	channel.join()
-		.receive("ok", resp => { console.log("Joined successfully", resp) })
+		.receive("ok", ({ comments }) => { renderComments(comments) })
 		.receive("error", resp => { console.log("Unable to join", resp) })
+
+	channel.on(`comments:${topicId}:new`, ({ comment }) => renderComment(comment))
 
 	document
 		.querySelector('button')
@@ -17,6 +35,6 @@ const createSocket = (topicId) => {
 			const content = document.querySelector('textarea').value;
 			channel.push('comment:add', { content })
 		})
-}
+};
 
 window.createSocket = createSocket;
